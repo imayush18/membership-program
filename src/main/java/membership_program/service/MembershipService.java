@@ -25,6 +25,7 @@ public class MembershipService {
     private final MembershipTierRepository tierRepository;
     private final SubscriptionRepository subscriptionRepository;
 
+    @Transactional(readOnly = true)
     public List<PlanResponse> getAllPlans() {
         return planRepository.findAll().stream().map(this::toPlanResponse).toList();
     }
@@ -86,6 +87,7 @@ public class MembershipService {
         return toSubscriptionResponse(subscriptionRepository.save(subscription));
     }
 
+    @Transactional(readOnly = true)
     public SubscriptionResponse getSubscription(Long userId) {
         return toSubscriptionResponse(getActiveSubscription(userId));
     }

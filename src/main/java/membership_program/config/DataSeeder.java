@@ -6,7 +6,9 @@ import membership_program.entity.MembershipPlanEntity;
 import membership_program.entity.MembershipTierEntity;
 import membership_program.enums.PlanType;
 import membership_program.enums.TierLevel;
+import membership_program.entity.TierCriteriaEntity;
 import membership_program.repository.MembershipPlanRepository;
+import membership_program.repository.TierCriteriaRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +21,23 @@ import java.util.List;
 public class DataSeeder implements CommandLineRunner {
 
     private final MembershipPlanRepository planRepository;
+    private final TierCriteriaRepository tierCriteriaRepository;
 
     @Override
     @Transactional
     public void run(String... args) {
-        if (planRepository.count() > 0) return; // skip if already seeded
+        if (planRepository.count() > 0) return;
 
         planRepository.saveAll(List.of(
                 buildPlan("Monthly Plan", PlanType.MONTHLY, 30, new BigDecimal("99.00")),
                 buildPlan("Quarterly Plan", PlanType.QUARTERLY, 90, new BigDecimal("249.00")),
                 buildPlan("Yearly Plan", PlanType.YEARLY, 365, new BigDecimal("899.00"))
+        ));
+
+        tierCriteriaRepository.saveAll(List.of(
+                TierCriteriaEntity.builder().tierLevel(TierLevel.SILVER).minOrderCount(3).build(),
+                TierCriteriaEntity.builder().tierLevel(TierLevel.GOLD).minOrderCount(10).minOrderValue(new BigDecimal("5000.00")).build(),
+                TierCriteriaEntity.builder().tierLevel(TierLevel.PLATINUM).minOrderCount(20).minOrderValue(new BigDecimal("15000.00")).cohort("PREMIUM_USER").build()
         ));
     }
 
