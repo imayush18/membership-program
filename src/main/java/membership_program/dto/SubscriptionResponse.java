@@ -2,7 +2,7 @@ package membership_program.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import membership_program.enums.SubscriptionStatusEnums;
+import membership_program.enums.SubscriptionStatus;
 
 import java.time.LocalDate;
 
@@ -17,5 +17,5 @@ public class SubscriptionResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate cancelledAt;
-    private SubscriptionStatusEnums status;
+    private SubscriptionStatus status;
 }

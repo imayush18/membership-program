@@ -1,11 +1,15 @@
 package membership_program.service;
 
 import lombok.RequiredArgsConstructor;
-import membership_program.dto.*;
+import membership_program.dto.BenefitResponse;
+import membership_program.dto.PlanResponse;
+import membership_program.dto.SubscribeRequest;
+import membership_program.dto.SubscriptionResponse;
+import membership_program.dto.TierResponse;
 import membership_program.entity.MembershipPlanEntity;
 import membership_program.entity.MembershipTierEntity;
 import membership_program.entity.SubscriptionEntity;
-import membership_program.enums.SubscriptionStatusEnums;
+import membership_program.enums.SubscriptionStatus;
 import membership_program.enums.TierLevel;
 import membership_program.exception.ResourceNotFoundException;
 import membership_program.repository.MembershipPlanRepository;
@@ -32,7 +36,7 @@ public class MembershipService {
 
     @Transactional
     public SubscriptionResponse subscribe(SubscribeRequest request) {
-        subscriptionRepository.findByUserIdAndStatus(request.getUserId(), SubscriptionStatusEnums.ACTIVE)
+        subscriptionRepository.findByUserIdAndStatus(request.getUserId(), SubscriptionStatus.ACTIVE)
                 .ifPresent(s -> { throw new IllegalStateException("User already has an active subscription"); });
 
         MembershipPlanEntity plan = planRepository.findById(request.getPlanId())
@@ -51,7 +55,7 @@ public class MembershipService {
                 .tier(tier)
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(plan.getDurationDays()))
-                .status(SubscriptionStatusEnums.ACTIVE)
+                .status(SubscriptionStatus.ACTIVE)
                 .build();
 
         return toSubscriptionResponse(subscriptionRepository.save(subscription));
@@ -82,7 +86,7 @@ public class MembershipService {
     @Transactional
     public SubscriptionResponse cancel(Long userId) {
         SubscriptionEntity subscription = getActiveSubscription(userId);
-        subscription.setStatus(SubscriptionStatusEnums.CANCELLED);
+        subscription.setStatus(SubscriptionStatus.CANCELLED);
         subscription.setCancelledAt(LocalDate.now());
         return toSubscriptionResponse(subscriptionRepository.save(subscription));
     }
@@ -94,11 +98,11 @@ public class MembershipService {
 
     private SubscriptionEntity getActiveSubscription(Long userId) {
         SubscriptionEntity subscription = subscriptionRepository
-                .findByUserIdAndStatus(userId, SubscriptionStatusEnums.ACTIVE)
+                .findByUserIdAndStatus(userId, SubscriptionStatus.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active subscription for user: " + userId));
 
         if (subscription.getEndDate().isBefore(LocalDate.now())) {
-            subscription.setStatus(SubscriptionStatusEnums.EXPIRED);
+            subscription.setStatus(SubscriptionStatus.EXPIRED);
             subscriptionRepository.save(subscription);
             throw new ResourceNotFoundException("Subscription has expired for user: " + userId);
         }

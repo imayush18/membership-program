@@ -1,6 +1,6 @@
 package membership_program.enums;
 
-public enum SubscriptionStatusEnums {
+public enum SubscriptionStatus {
 
     ACTIVE,
     CANCELLED,

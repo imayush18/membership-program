@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 public class SubscribeRequest {
-    @NotNull
+    @NotNull(message = "userId is required")
     private Long userId;
-    @NotNull
+    @NotNull(message = "planId is required")
     private Long planId;
-    @NotNull
+    @NotNull(message = "tierId is required")
     private Long tierId;
 }

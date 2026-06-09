@@ -5,11 +5,15 @@ import lombok.RequiredArgsConstructor;
 import membership_program.dto.PlanResponse;
 import membership_program.dto.TierEvaluationRequest;
 import membership_program.dto.TierEvaluationResponse;
+import membership_program.dto.UserContext;
 import membership_program.service.MembershipService;
 import membership_program.service.TierEvaluationService;
-import membership_program.dto.UserContext;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

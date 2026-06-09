@@ -20,6 +20,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataSeeder implements CommandLineRunner {
 
+    private static final String FREE_DELIVERY = "FREE_DELIVERY";
+    private static final String DISCOUNT = "DISCOUNT";
+    private static final String EARLY_ACCESS = "EARLY_ACCESS";
+    private static final String PRIORITY_SUPPORT = "PRIORITY_SUPPORT";
+    private static final String COHORT_PREMIUM = "PREMIUM_USER";
+
     private final MembershipPlanRepository planRepository;
     private final TierCriteriaRepository tierCriteriaRepository;
 
@@ -37,20 +43,20 @@ public class DataSeeder implements CommandLineRunner {
         tierCriteriaRepository.saveAll(List.of(
                 TierCriteriaEntity.builder().tierLevel(TierLevel.SILVER).minOrderCount(3).build(),
                 TierCriteriaEntity.builder().tierLevel(TierLevel.GOLD).minOrderCount(10).minOrderValue(new BigDecimal("5000.00")).build(),
-                TierCriteriaEntity.builder().tierLevel(TierLevel.PLATINUM).minOrderCount(20).minOrderValue(new BigDecimal("15000.00")).cohort("PREMIUM_USER").build()
+                TierCriteriaEntity.builder().tierLevel(TierLevel.PLATINUM).minOrderCount(20).minOrderValue(new BigDecimal("15000.00")).cohort(COHORT_PREMIUM).build()
         ));
     }
 
     private MembershipPlanEntity buildPlan(String name, PlanType type, int days, BigDecimal price) {
         MembershipTierEntity silver = buildTier("Silver", "Basic perks", TierLevel.SILVER,
-                List.of(benefit("FREE_DELIVERY", "true")));
+                List.of(benefit(FREE_DELIVERY, "true")));
 
         MembershipTierEntity gold = buildTier("Gold", "More discounts + early access", TierLevel.GOLD,
-                List.of(benefit("FREE_DELIVERY", "true"), benefit("DISCOUNT", "10%"), benefit("EARLY_ACCESS", "true")));
+                List.of(benefit(FREE_DELIVERY, "true"), benefit(DISCOUNT, "10%"), benefit(EARLY_ACCESS, "true")));
 
         MembershipTierEntity platinum = buildTier("Platinum", "All perks + priority support", TierLevel.PLATINUM,
-                List.of(benefit("FREE_DELIVERY", "true"), benefit("DISCOUNT", "20%"),
-                        benefit("EARLY_ACCESS", "true"), benefit("PRIORITY_SUPPORT", "true")));
+                List.of(benefit(FREE_DELIVERY, "true"), benefit(DISCOUNT, "20%"),
+                        benefit(EARLY_ACCESS, "true"), benefit(PRIORITY_SUPPORT, "true")));
 
         MembershipPlanEntity plan = MembershipPlanEntity.builder()
                 .name(name).planType(type).durationDays(days).price(price)
