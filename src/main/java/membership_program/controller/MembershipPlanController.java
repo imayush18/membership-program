@@ -1,5 +1,7 @@
 package membership_program.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import membership_program.dto.PlanResponse;
@@ -20,17 +22,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
+@Tag(name = "Membership Plans", description = "APIs to view plans and evaluate tier eligibility")
 public class MembershipPlanController {
 
     private final MembershipService membershipService;
     private final TierEvaluationService tierEvaluationService;
 
     @GetMapping
+    @Operation(summary = "Get all membership plans", description = "Returns all plans with their tiers and benefits")
     public ResponseEntity<List<PlanResponse>> getAllPlans() {
         return ResponseEntity.ok(membershipService.getAllPlans());
     }
 
     @PostMapping("/evaluate-tier")
+    @Operation(summary = "Evaluate recommended tier", description = "Returns the highest tier a user qualifies for based on order count, order value and cohort")
     public ResponseEntity<TierEvaluationResponse> evaluateTier(@Valid @RequestBody TierEvaluationRequest request) {
         UserContext context = UserContext.builder()
                 .userId(request.getUserId())
