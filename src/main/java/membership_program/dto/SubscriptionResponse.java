@@ -16,5 +16,6 @@ public class SubscriptionResponse {
     private String tierLevel;
     private LocalDate startDate;
     private LocalDate endDate;
+    private LocalDate cancelledAt;
     private SubscriptionStatusEnums status;
 }

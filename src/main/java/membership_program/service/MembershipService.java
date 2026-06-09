@@ -40,6 +40,10 @@ public class MembershipService {
         MembershipTierEntity tier = tierRepository.findById(request.getTierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Tier not found: " + request.getTierId()));
 
+        if (!tier.getPlan().getId().equals(plan.getId())) {
+            throw new IllegalStateException("Tier " + tier.getId() + " does not belong to plan " + plan.getId());
+        }
+
         SubscriptionEntity subscription = SubscriptionEntity.builder()
                 .userId(request.getUserId())
                 .plan(plan)
@@ -78,6 +82,7 @@ public class MembershipService {
     public SubscriptionResponse cancel(Long userId) {
         SubscriptionEntity subscription = getActiveSubscription(userId);
         subscription.setStatus(SubscriptionStatusEnums.CANCELLED);
+        subscription.setCancelledAt(LocalDate.now());
         return toSubscriptionResponse(subscriptionRepository.save(subscription));
     }
 
@@ -86,8 +91,16 @@ public class MembershipService {
     }
 
     private SubscriptionEntity getActiveSubscription(Long userId) {
-        return subscriptionRepository.findByUserIdAndStatus(userId, SubscriptionStatusEnums.ACTIVE)
+        SubscriptionEntity subscription = subscriptionRepository
+                .findByUserIdAndStatus(userId, SubscriptionStatusEnums.ACTIVE)
                 .orElseThrow(() -> new ResourceNotFoundException("No active subscription for user: " + userId));
+
+        if (subscription.getEndDate().isBefore(LocalDate.now())) {
+            subscription.setStatus(SubscriptionStatusEnums.EXPIRED);
+            subscriptionRepository.save(subscription);
+            throw new ResourceNotFoundException("Subscription has expired for user: " + userId);
+        }
+        return subscription;
     }
 
     private PlanResponse toPlanResponse(MembershipPlanEntity plan) {
@@ -129,6 +142,7 @@ public class MembershipService {
                 .tierLevel(s.getTier().getTierLevel().name())
                 .startDate(s.getStartDate())
                 .endDate(s.getEndDate())
+                .cancelledAt(s.getCancelledAt())
                 .status(s.getStatus())
                 .build();
     }

@@ -33,6 +33,8 @@ public class SubscriptionEntity {
 
     private LocalDate endDate;
 
+    private LocalDate cancelledAt;
+
     @Enumerated(EnumType.STRING)
     private SubscriptionStatusEnums status;
 
